@@ -1,0 +1,5 @@
+user = $MYSQL_USER
+password = $MYSQL_PASSWORD
+hosts = $MYSQL_HOSTS
+dbname = $MYSQL_DB
+query = SELECT destination FROM virtual_aliases WHERE source='%s'
