@@ -1,60 +1,34 @@
 #!/bin/bash
 set -e
 
-# Postfix TLS
-if [[ -d /etc/ssl/mailsrv ]]; then
-    postconf -e smtpd_use_tls=yes
-    postconf -e smtpd_tls_cert_file=/etc/ssl/mailsrv/fullchain.pem
-    postconf -e smtpd_tls_key_file=/etc/ssl/mailsrv/privkey.pem
-    postconf -e smtpd_tls_auth_only=yes
-else
-    echo "WARNING: No TLS certificates."
+# Checks
+if [[ ! -d /etc/ssl/mailsrv ]]; then
+    printf "ERROR: No TLS certificate was found, please make sure these files exists:\n\t/etc/ssl/mailsrv/fullchain.pem (certificate)\n\t/etc/ssl/mailsrv/privkey.pem (private key)\n"
+    exit 1
 fi
 
-# Postfix SASL
-postconf -e smtpd_sasl_type=dovecot
-postconf -e smtpd_sasl_path=private/auth
-postconf -e smtpd_sasl_auth_enable=yes
-postconf -e smtpd_recipient_restrictions=permit_sasl_authenticated,permit_mynetworks,reject_unauth_destination
-postconf -e mydestination=localhost
+if [[ ! -d /var/mail/vhosts ]]; then
+    printf "WARNING: Mail directory is not mapped.\n\tCreate a volume for /var/mail/vhosts"
+    # Create this directory
+    mkdir -p /var/mail/vhosts
+fi
 
-postconf -e virtual_transport=lmtp:unix:private/dovecot-lmtp
-postconf -e virtual_mailbox_domains=mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
-postconf -e virtual_mailbox_maps=mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
-postconf -e virtual_alias_maps=mysql:/etc/postfix/mysql-virtual-alias-maps.cf
-
-# Virtual mailbox
-cat > /etc/postfix/mysql-virtual-mailbox-domains.cf <<EOF
-user = $MYSQL_USER
-password = $MYSQL_PASSWORD
-hosts = $MYSQL_HOSTS
-dbname = $MYSQL_DB
-query = SELECT 1 FROM virtual_domains WHERE name='%s'
-EOF
-
-cat > /etc/postfix/mysql-virtual-mailbox-maps.cf <<EOF
-user = $MYSQL_USER
-password = $MYSQL_PASSWORD
-hosts = $MYSQL_HOSTS
-dbname = $MYSQL_DB
-query = SELECT 1 FROM virtual_users WHERE email='%s'
-EOF
-
-cat > /etc/postfix/mysql-virtual-alias-maps.cf <<EOF
-user = $MYSQL_USER
-password = $MYSQL_PASSWORD
-hosts = $MYSQL_HOSTS
-dbname = $MYSQL_DB
-query = SELECT destination FROM virtual_aliases WHERE source='%s'
-EOF
-
-postconf -M submission/inet="submission   inet   -   -   -   -   -   smtpd"
-postconf -P "submission/inet/syslog_name=postfix/submission"
-postconf -P "submission/inet/smtpd_tls_security_level=encrypt"
-postconf -P "submission/inet/smtpd_sasl_auth_enable=yes"
-postconf -P "submission/inet/smtpd_recipient_restrictions=permit_sasl_authenticated,reject_unauth_destination"
-
-# Dovecot
-set_config () {
-    grep -q '^'$2 $1 && sed -i 's/^'$2'.*/'$2'='$3'/' $1 || echo $2'='$3 >> $1
+expand_var () {
+    sed -i "s#\$"$2"#"$3"#g" $1
 }
+
+eval_config () {
+    expand_var $1 HOSTNAME          $HOSTNAME
+    expand_var $1 MYSQL_USER        $MYSQL_USER
+    expand_var $1 MYSQL_PASSWORD    $MYSQL_PASSWORD
+    expand_var $1 MYSQL_HOSTS       $MYSQL_HOSTS
+    expand_var $1 MYSQL_DB          $MYSQL_DB
+}
+
+# Evaluate configs
+eval_config /etc/postfix/main.cf
+eval_config /etc/postfix/mysql-virtual-mailbox-domains.cf
+eval_config /etc/postfix/mysql-virtual-mailbox-maps.cf
+eval_config /etc/postfix/mysql-virtual-alias-maps.cf
+
+# TODO: Authorization part and vmail user
