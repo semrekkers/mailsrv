@@ -13,5 +13,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
         opendkim \
         opendkim-tools
 
+RUN groupadd -g 5000 vmail && useradd -g vmail -u 5000 vmail -d /var/vmail
+
+COPY config/postfix/* /etc/postfix/
+COPY config/dovecot/* /etc/dovecot/
+
 COPY scripts/* /usr/local/bin/
 ENTRYPOINT [ "entrypoint.sh" ]
