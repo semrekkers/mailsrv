@@ -3,6 +3,7 @@ set -e
 
 SSL_CERT=/etc/ssl/mailsrv
 VMAIL=/var/vmail
+DKIM=/etc/opendkim
 
 echo "Configuring mailsrv..."
 
@@ -16,6 +17,12 @@ if [[ ! -d $VMAIL ]]; then
     printf "WARNING: Mail directory is not mapped.\n\tCreate a volume for "$VMAIL"\n"
     # Create this directory
     mkdir -p $VMAIL
+fi
+
+if [[ ! -d $DKIM ]]; then
+    printf "WARNING: DKIM directory is not mapped.\n\tCreate a volume for "$DKIM"\n"
+    # Create this directory
+    mkdir -p $DKIM
 fi
 
 if [[ $(stat -c "%U:%G" $VMAIL) != "vmail:vmail" ]]; then
@@ -51,5 +58,7 @@ eval_config /etc/dovecot/conf.d/10-ssl.conf
 eval_config /etc/dovecot/conf.d/15-lda.conf
 eval_config /etc/dovecot/conf.d/auth-sql.conf.ext
 eval_config /etc/dovecot/dovecot-sql.conf.ext
+
+eval_config /etc/opendkim.conf
 
 echo "Done configuring."
