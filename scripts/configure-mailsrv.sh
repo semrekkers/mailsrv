@@ -48,6 +48,7 @@ eval_config /etc/dovecot/conf.d/10-auth.conf
 eval_config /etc/dovecot/conf.d/10-mail.conf
 eval_config /etc/dovecot/conf.d/10-master.conf
 eval_config /etc/dovecot/conf.d/10-ssl.conf
+eval_config /etc/dovecot/conf.d/15-lda.conf
 eval_config /etc/dovecot/conf.d/auth-sql.conf.ext
 eval_config /etc/dovecot/dovecot-sql.conf.ext
 
