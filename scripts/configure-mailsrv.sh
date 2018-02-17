@@ -1,36 +1,41 @@
 #!/bin/bash
 set -e
 
-SSL_CERT=/etc/ssl/mailsrv
-VMAIL=/var/vmail
-DKIM=/etc/opendkim
-
 echo "Configuring mailsrv..."
 
+MAIL_CERT=${MAIL_CERT:-/etc/ssl/mailsrv/fullchain.pem}
+MAIL_KEY=${MAIL_KEY:-/etc/ssl/mailsrv/privkey.pem}
+MAIL_VMAIL=/var/vmail
+MAIL_DKIM=/etc/opendkim
+
 # Checks
-if [[ ! -d $SSL_CERT ]]; then
-    printf "ERROR: No TLS certificate was found, please make sure these files exists:\n\t"$SSL_CERT"/fullchain.pem (certificate)\n\t"$SSL_CERT"/privkey.pem (private key)\n"
+if [[ ! -f $MAIL_CERT || ! -f $MAIL_KEY ]]; then
+    echo -e "ERROR: Invalid TLS configuration, please make sure these files exists:"
+    echo -e "\t$MAIL_CERT (certificate)"
+    echo -e "\t$MAIL_KEY (private key)"
     exit 1
 fi
 
-if [[ ! -d $VMAIL ]]; then
-    printf "WARNING: Mail directory is not mapped.\n\tCreate a volume for "$VMAIL"\n"
+if [[ ! -d $MAIL_VMAIL ]]; then
+    echo -e "WARNING: Mail directory is not mapped."
+    echo -e "\tYou should create a volume for '"$MAIL_VMAIL"'."
     # Create this directory
-    mkdir -p $VMAIL
+    mkdir -p $MAIL_VMAIL
 fi
 
-if [[ ! -d $DKIM ]]; then
-    printf "WARNING: DKIM directory is not mapped.\n\tCreate a volume for "$DKIM"\n"
+if [[ ! -d $MAIL_DKIM ]]; then
+    echo -e "WARNING: DKIM directory is not mapped."
+    echo -e "\tYou should create a volume for '"$MAIL_DKIM"'."
     # Create this directory
-    mkdir -p $DKIM
+    mkdir -p $MAIL_DKIM
 fi
 
-if [[ $(stat -c "%U:%G" $VMAIL) != "vmail:vmail" ]]; then
+if [[ $(stat -c "%U:%G" $MAIL_VMAIL) != "vmail:vmail" ]]; then
     printf "WARNING: Mail directory has wrong owner\n"
-    chown -R vmail:vmail $VMAIL
+    chown -R vmail:vmail $MAIL_VMAIL
 fi
 
-printf $HOSTNAME"\n" > /etc/mailname
+echo $HOSTNAME > /etc/mailname
 chown -R vmail:dovecot /etc/dovecot
 
 expand_var () {
@@ -43,6 +48,8 @@ eval_config () {
     expand_var $1 MYSQL_PASSWORD    $MYSQL_PASSWORD
     expand_var $1 MYSQL_HOST        $MYSQL_HOST
     expand_var $1 MYSQL_DB          $MYSQL_DB
+    expand_var $1 MAIL_CERT         $MAIL_CERT
+    expand_var $1 MAIL_KEY          $MAIL_KEY
 }
 
 # Evaluate configs

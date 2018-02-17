@@ -22,3 +22,5 @@ COPY config/etc/        /etc/
 
 COPY scripts/* /usr/local/bin/
 ENTRYPOINT [ "entrypoint.sh" ]
+
+EXPOSE 25 143 587 993

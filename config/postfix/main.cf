@@ -19,8 +19,8 @@ readme_directory = no
 compatibility_level = 2
 
 # TLS parameters
-smtpd_tls_cert_file = /etc/ssl/mailsrv/fullchain.pem
-smtpd_tls_key_file = /etc/ssl/mailsrv/privkey.pem
+smtpd_tls_cert_file = $MAIL_CERT
+smtpd_tls_key_file = $MAIL_KEY
 smtpd_use_tls = yes
 smtpd_tls_auth_only = yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
