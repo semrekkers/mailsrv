@@ -16,6 +16,7 @@ append_dot_mydomain = no
 #delay_warning_time = 4h
 
 readme_directory = no
+compatibility_level = 2
 
 # TLS parameters
 smtpd_tls_cert_file = /etc/ssl/mailsrv/fullchain.pem
