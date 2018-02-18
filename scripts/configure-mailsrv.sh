@@ -35,7 +35,7 @@ if [[ ! -d $MAIL_DKIM ]]; then
 fi
 
 if [[ $(stat -c "%U:%G" $MAIL_VMAIL) != "vmail:vmail" ]]; then
-    printf "WARNING: Mail directory has wrong owner\n"
+    printf "INFO: Mail directory has wrong owner, resetting this.\n"
     chown -R vmail:vmail $MAIL_VMAIL
 fi
 

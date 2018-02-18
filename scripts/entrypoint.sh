@@ -8,5 +8,4 @@ if [[ ! -f /etc/mailsrv/.configured ]]; then
     touch /etc/mailsrv/.configured
 fi
 
-supervisord -c /etc/supervisor/supervisord.conf &
-/bin/bash
+exec supervisord -c /etc/supervisor/supervisord.conf
