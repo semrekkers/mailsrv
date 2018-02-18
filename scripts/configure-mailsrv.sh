@@ -28,6 +28,10 @@ if [[ ! -d $MAIL_DKIM ]]; then
     echo -e "\tYou should create a volume for '"$MAIL_DKIM"'."
     # Create this directory
     mkdir -p $MAIL_DKIM
+    # And files
+    touch /etc/opendkim/TrustedHosts
+    touch /etc/opendkim/SigningTable
+    touch /etc/opendkim/KeyTable
 fi
 
 if [[ $(stat -c "%U:%G" $MAIL_VMAIL) != "vmail:vmail" ]]; then
