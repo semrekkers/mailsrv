@@ -11,7 +11,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
         dovecot-lmtpd \
         dovecot-mysql \
         opendkim \
-        opendkim-tools
+        opendkim-tools \
+        libopendbx1-mysql
 
 RUN groupadd -g 5000 vmail && useradd -g vmail -u 5000 vmail -d /var/vmail
 
