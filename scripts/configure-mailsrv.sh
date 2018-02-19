@@ -3,7 +3,7 @@ set -e
 
 echo "Configuring mailsrv..."
 
-MAIL_CERT=${MAIL_CERT:-/etc/ssl/mailsrv/fullchain.pem}
+MAIL_CERT=${MAIL_CERT:-/etc/ssl/mailsrv/cert.pem}
 MAIL_KEY=${MAIL_KEY:-/etc/ssl/mailsrv/privkey.pem}
 MAIL_VMAIL=/var/vmail
 MAIL_DKIM=/etc/opendkim
