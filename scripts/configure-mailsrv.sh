@@ -3,8 +3,9 @@ set -e
 
 echo "Configuring mailsrv..."
 
-MAIL_CERT=${MAIL_CERT:-/etc/ssl/mailsrv/cert.pem}
-MAIL_KEY=${MAIL_KEY:-/etc/ssl/mailsrv/privkey.pem}
+MAIL_TLS_DIR=${MAIL_TLS_DIR:-/etc/ssl/mailsrv}
+MAIL_CERT=${MAIL_CERT:-$MAIL_TLS_DIR/cert.pem}
+MAIL_KEY=${MAIL_KEY:-$MAIL_TLS_DIR/privkey.pem}
 MAIL_VMAIL=/var/vmail
 MAIL_DKIM=/etc/opendkim
 MAIL_DKIM_SELECTOR=${MAIL_DKIM_SELECTOR:-`date +%s | sha256sum | base64 | head -c 8`}
