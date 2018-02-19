@@ -7,7 +7,8 @@ MAIL_CERT=${MAIL_CERT:-/etc/ssl/mailsrv/fullchain.pem}
 MAIL_KEY=${MAIL_KEY:-/etc/ssl/mailsrv/privkey.pem}
 MAIL_VMAIL=/var/vmail
 MAIL_DKIM=/etc/opendkim
-MAIL_SELECTOR=${MAIL_SELECTOR:-`date +%s | sha256sum | base64 | head -c 8`}
+MAIL_DKIM_SELECTOR=${MAIL_DKIM_SELECTOR:-`date +%s | sha256sum | base64 | head -c 8`}
+MAIL_DKIM_KEY=${MAIL_DKIM_KEY:-$MAIL_DKIM/privkey.pem}
 
 # Checks
 if [[ ! -f $MAIL_CERT || ! -f $MAIL_KEY ]]; then
@@ -29,10 +30,12 @@ if [[ ! -d $MAIL_DKIM ]]; then
     echo -e "\tYou should create a volume for '"$MAIL_DKIM"'."
     # Create this directory
     mkdir -p $MAIL_DKIM
-    
+fi
+
+if [[ ! -f $MAIL_DKIM_KEY ]]; then
     echo -e "INFO: Creating new keypair for DKIM"
     opendkim-genkey -D $MAIL_DKIM -d $HOSTNAME -s $MAIL_SELECTOR
-    mv $MAIL_DKIM/$MAIL_SELECTOR.private $MAIL_DKIM/privkey.pem
+    mv $MAIL_DKIM/$MAIL_SELECTOR.private $MAIL_DKIM_KEY
     mv $MAIL_DKIM/$MAIL_SELECTOR.txt $MAIL_DKIM/record.txt
     echo -e "INFO: Created a new keypair for DKIM selector: "$MAIL_SELECTOR
     echo -e "\n\n\tYour DKIM public key (DNS record):\n"
@@ -53,14 +56,15 @@ expand_var () {
 }
 
 eval_config () {
-    expand_var $1 HOSTNAME          $HOSTNAME
-    expand_var $1 MYSQL_USER        $MYSQL_USER
-    expand_var $1 MYSQL_PASSWORD    $MYSQL_PASSWORD
-    expand_var $1 MYSQL_HOST        $MYSQL_HOST
-    expand_var $1 MYSQL_DB          $MYSQL_DB
-    expand_var $1 MAIL_CERT         $MAIL_CERT
-    expand_var $1 MAIL_KEY          $MAIL_KEY
-    expand_var $1 MAIL_SELECTOR     $MAIL_SELECTOR
+    expand_var $1 HOSTNAME              $HOSTNAME
+    expand_var $1 MYSQL_USER            $MYSQL_USER
+    expand_var $1 MYSQL_PASSWORD        $MYSQL_PASSWORD
+    expand_var $1 MYSQL_HOST            $MYSQL_HOST
+    expand_var $1 MYSQL_DB              $MYSQL_DB
+    expand_var $1 MAIL_CERT             $MAIL_CERT
+    expand_var $1 MAIL_KEY              $MAIL_KEY
+    expand_var $1 MAIL_DKIM_SELECTOR    $MAIL_SELECTOR
+    expand_var $1 MAIL_DKIM_KEY         $MAIL_DKIM_KEY
 }
 
 # Evaluate configs
