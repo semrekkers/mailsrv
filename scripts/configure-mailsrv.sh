@@ -48,6 +48,11 @@ if [[ $(stat -c "%U:%G" $MAIL_VMAIL) != "vmail:vmail" ]]; then
     chown -R vmail:vmail $MAIL_VMAIL
 fi
 
+if [[ $(stat -c "%U:%G" $MAIL_DKIM) != "opendkim:opendkim" ]]; then
+    printf "INFO: DKIM directory has wrong owner, resetting this.\n"
+    chown -R opendkim:opendkim $MAIL_DKIM
+fi
+
 echo $HOSTNAME > /etc/mailname
 chown -R vmail:dovecot /etc/dovecot
 
