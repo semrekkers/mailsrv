@@ -34,10 +34,10 @@ fi
 
 if [[ ! -f $MAIL_DKIM_KEY ]]; then
     echo -e "INFO: Creating new keypair for DKIM"
-    opendkim-genkey -D $MAIL_DKIM -d $HOSTNAME -s $MAIL_SELECTOR
-    mv $MAIL_DKIM/$MAIL_SELECTOR.private $MAIL_DKIM_KEY
-    mv $MAIL_DKIM/$MAIL_SELECTOR.txt $MAIL_DKIM/record.txt
-    echo -e "INFO: Created a new keypair for DKIM selector: "$MAIL_SELECTOR
+    opendkim-genkey -D $MAIL_DKIM -d $HOSTNAME -s $MAIL_DKIM_SELECTOR
+    mv $MAIL_DKIM/$MAIL_DKIM_SELECTOR.private $MAIL_DKIM_KEY
+    mv $MAIL_DKIM/$MAIL_DKIM_SELECTOR.txt $MAIL_DKIM/record.txt
+    echo -e "INFO: Created a new keypair for DKIM selector: "$MAIL_DKIM_SELECTOR
     echo -e "\n\n\tYour DKIM public key (DNS record):\n"
     cat $MAIL_DKIM/record.txt
     echo -e "\n"
@@ -68,7 +68,7 @@ eval_config () {
     expand_var $1 MYSQL_DB              $MYSQL_DB
     expand_var $1 MAIL_CERT             $MAIL_CERT
     expand_var $1 MAIL_KEY              $MAIL_KEY
-    expand_var $1 MAIL_DKIM_SELECTOR    $MAIL_SELECTOR
+    expand_var $1 MAIL_DKIM_SELECTOR    $MAIL_DKIM_SELECTOR
     expand_var $1 MAIL_DKIM_KEY         $MAIL_DKIM_KEY
 }
 
