@@ -2,4 +2,4 @@ user = $MYSQL_USER
 password = $MYSQL_PASSWORD
 hosts = $MYSQL_HOST
 dbname = $MYSQL_DB
-query = SELECT 1 FROM virtual_users WHERE email='%s'
+query = SELECT 1 FROM virtual_users WHERE email='%s' AND active=1 AND send_only=0
