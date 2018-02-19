@@ -8,6 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
         postfix-mysql \
         dovecot-core \
         dovecot-imapd \
+        dovecot-pop3d \
         dovecot-lmtpd \
         dovecot-mysql \
         opendkim \
@@ -24,4 +25,4 @@ COPY config/etc/        /etc/
 COPY scripts/* /usr/local/bin/
 ENTRYPOINT [ "entrypoint.sh" ]
 
-EXPOSE 25 143 587 993
+EXPOSE 25 110 143 465 587 993 995
