@@ -25,4 +25,5 @@ COPY config/etc/        /etc/
 COPY scripts/* /usr/local/bin/
 ENTRYPOINT [ "entrypoint.sh" ]
 
+VOLUME [ "/var/vmail" ]
 EXPOSE 25 110 143 465 587 993 995
